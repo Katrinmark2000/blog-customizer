@@ -1,12 +1,14 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import styles from './ArticleParamsForm.module.scss';
 import {OptionType, fontFamilyOptions, fontSizeOptions, fontColors, backgroundColors, contentWidthArr, defaultArticleState} from 'src/constants/articleProps';
 import { RadioGroup } from 'src/ui/radio-group';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
+
 
 interface ArticleParamsFormProps {
 	fontFamily: OptionType;
@@ -79,23 +81,30 @@ export const ArticleParamsForm = ({
 	};
 
 	const handleApply = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault(); // Предотвращаем отправку формы
+		event.preventDefault();
 		// Применяем локальные состояния к родительским состояниям
         setFontFamily(localFontFamily);
         setFontSize(localFontSize);
         setFontColor(localFontColor);
         setBackgroundColor(localBackgroundColor);
         setContentWidth(localContentWidth);
-
-        // Закрываем боковую панель после применения изменений (по желанию)
         handleToggleSidebar();
 	};
 
+	const ref = useRef<HTMLDivElement | null>(null);
+
+ 	useOutsideClickClose({
+ 		isOpen: isSidebarOpen,
+ 		rootRef: ref,
+ 		onClose: () => setSidebarOpen(false),
+ 	});
+
+
 	return (
-		<>
+			<div ref={ref}>
 			<ArrowButton
 				isOpen={isSidebarOpen}
-				onClick={handleToggleSidebar} />
+				onClick={handleToggleSidebar}/>
 			<aside
 				className={clsx(styles.container, {
 				[styles.container_open]: isSidebarOpen,
@@ -145,7 +154,7 @@ export const ArticleParamsForm = ({
 					</div>
 				</form>
 			</aside>
-		</>
+		</div>
 	);
 
 }
