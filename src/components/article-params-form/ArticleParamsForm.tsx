@@ -1,20 +1,151 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-
+import React, { useState } from 'react';
+import clsx from 'clsx';
+import { Text } from 'src/ui/text';
+import { Select } from 'src/ui/select';
 import styles from './ArticleParamsForm.module.scss';
+import {OptionType, fontFamilyOptions, fontSizeOptions, fontColors, backgroundColors, contentWidthArr, defaultArticleState} from 'src/constants/articleProps';
+import { RadioGroup } from 'src/ui/radio-group';
 
-export const ArticleParamsForm = () => {
+interface ArticleParamsFormProps {
+	fontFamily: OptionType;
+	setFontFamily: (option: OptionType) => void;
+	fontSize: OptionType;
+	setFontSize: (option: OptionType) => void;
+	fontColor: OptionType;
+	setFontColor: (option: OptionType) => void;
+	backgroundColor: OptionType;
+	setBackgroundColor: (option: OptionType) => void;
+	contentWidth: OptionType;
+	setContentWidth: (option: OptionType) => void;
+}
+
+
+export const ArticleParamsForm = ({
+	fontFamily,
+	setFontFamily,
+	fontSize,
+	setFontSize,
+	fontColor,
+	setFontColor,
+	backgroundColor,
+	setBackgroundColor,
+	contentWidth,
+	setContentWidth
+}: ArticleParamsFormProps) => {
+
+	// Локальные состояния для параметров
+    const [localFontFamily, setLocalFontFamily] = useState(fontFamily);
+    const [localFontSize, setLocalFontSize] = useState(fontSize);
+    const [localFontColor, setLocalFontColor] = useState(fontColor);
+    const [localBackgroundColor, setLocalBackgroundColor] = useState(backgroundColor);
+    const [localContentWidth, setLocalContentWidth] = useState(contentWidth);
+
+
+	//Состояние контейнера (сайдбара)
+	const [isSidebarOpen, setSidebarOpen] = useState(false);
+	const handleToggleSidebar = () => {
+		setSidebarOpen(prevState => !prevState); // Переключаем состояние
+	};
+	//Выбор шрифта
+	const handleFontChange = (selectedOption: OptionType) => {
+		setLocalFontFamily(selectedOption); // Обновляем состояние выбранного шрифта
+	  };
+	//Выбор размера шрифта
+	const handleFontSizeChange =(selectedSizeFont: OptionType) => {
+		setLocalFontSize(selectedSizeFont); // Обновляем состояние выбранного размера шрифта
+	};
+	//Выбор цвета шрифта
+	const handleFontColorChange =(selectedColorFont: OptionType) => {
+		setLocalFontColor(selectedColorFont); // Обновляем состояние выбранного цвета шрифта
+	};
+	//Выбор цвета фона
+	const handleBackgroundColorChange =(selectedBackgroundColor: OptionType) => {
+		setLocalBackgroundColor(selectedBackgroundColor); // Обновляем состояние выбранного цвета фона
+	};
+	//Выбор ширины контейнера
+	const handleContentWidthChange =(selectedContentWidth: OptionType) => {
+		setLocalContentWidth(selectedContentWidth); // Обновляем состояние выбранного цвета фона
+	};
+
+	const handleReset = () => {
+		// Сбрасываем локальные состояния к значениям по умолчанию
+        setLocalFontFamily(fontFamilyOptions[0]);
+        setLocalFontSize(defaultArticleState.fontSizeOption);
+        setLocalFontColor(defaultArticleState.fontColor);
+        setLocalBackgroundColor(defaultArticleState.backgroundColor);
+        setLocalContentWidth(defaultArticleState.contentWidth);
+	};
+
+	const handleApply = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault(); // Предотвращаем отправку формы
+		// Применяем локальные состояния к родительским состояниям
+        setFontFamily(localFontFamily);
+        setFontSize(localFontSize);
+        setFontColor(localFontColor);
+        setBackgroundColor(localBackgroundColor);
+        setContentWidth(localContentWidth);
+
+        // Закрываем боковую панель после применения изменений (по желанию)
+        handleToggleSidebar();
+	};
+
 	return (
 		<>
-			<ArrowButton isOpen={false} onClick={() => {}} />
-			<aside className={styles.container}>
-				<form className={styles.form}>
+			<ArrowButton
+				isOpen={isSidebarOpen}
+				onClick={handleToggleSidebar} />
+			<aside
+				className={clsx(styles.container, {
+				[styles.container_open]: isSidebarOpen,
+			})}>
+				<form
+				className={styles.form}
+				onSubmit={handleApply}
+				onReset={handleReset}>
+				<Text
+				size={31}
+				uppercase
+				weight={800}>Задайте параметры</Text>
+				<Select
+				options={fontFamilyOptions}
+				selected={fontFamily}
+				onChange={handleFontChange}
+				title="Шрифт"
+				/>
+				<RadioGroup
+				options={fontSizeOptions}
+				selected={fontSize}
+				title='Размер шрифта'
+				name='fontSize'
+				onChange={handleFontSizeChange}
+				/>
+				<Select
+				options={fontColors}
+				selected={fontColor}
+				onChange={handleFontColorChange}
+				title="Цвет шрифта"
+				/>
+				<Select
+				options={backgroundColors}
+				selected={backgroundColor}
+				onChange={handleBackgroundColorChange}
+				title="Цвет фона"
+				/>
+				<Select
+				options={contentWidthArr}
+				selected={contentWidth}
+				onChange={handleContentWidthChange}
+				title="Ширина контена"
+				/>
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
+						<Button title='Сбросить' htmlType='reset' type='clear'/>
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
 			</aside>
 		</>
 	);
-};
+
+}
