@@ -6,6 +6,8 @@
 	overflow: scroll;
 	transform: translate(-616px);
 	transition: transform 0.5s ease;
+	overflow: auto;
+	background-color: white;
 }
 
 .container_open {
@@ -18,12 +20,12 @@
 	flex-direction: column;
 	gap: 50px;
 	box-sizing: border-box;
-	width: 616px;
+	border-right: 1px solid #000000;
+	width: 100%;
 	height: auto;
 	min-height: 100%;
 	padding: 50px 31px;
 	background-color: #ffffff;
-	border-right: 1px solid #000000;
 }
 
 .bottomContainer {
